@@ -10,7 +10,7 @@
    use(m5-1.0)  // See M5 docs in Makerchip IDE Learn menu.
    
    // ---SETTINGS---
-   var(my_design, tt_um_example)  /// Change tt_um_example to tt_um_<your-github-username>_<name-of-your-project>. (See README.md.)
+   var(my_design, tt_um_stevehoover_counter)  /// Change tt_um_example to tt_um_<your-github-username>_<name-of-your-project>. (See README.md.)
    var(debounce_inputs, 0)
                      /// Legal values:
                      ///   1: Provide synchronization and debouncing on all input signals.
@@ -117,13 +117,35 @@ module m5_user_module_name (
    // your Verilog logic goes here.
    // =========================================
    
-   // ...
+   // Free-running counter.
+   logic [3:0] cnt;
+   always_ff @(posedge clk) begin
+      cnt <= reset ? 4'b0 : cnt + 1;
+   end
+   // 7-segment decoder for output
+   assign uo_out[7:0] =
+      (cnt == 0)  ? 8'b00111111 : // '0'
+      (cnt == 1)  ? 8'b00000110 : // '1'
+      (cnt == 2)  ? 8'b01011011 : // '2'
+      (cnt == 3)  ? 8'b01001111 : // '3'
+      (cnt == 4)  ? 8'b01100110 : // '4'
+      (cnt == 5)  ? 8'b01101101 : // '5'
+      (cnt == 6)  ? 8'b01111101 : // '6'
+      (cnt == 7)  ? 8'b00000111 : // '7'
+      (cnt == 8)  ? 8'b01111111 : // '8'
+      (cnt == 9)  ? 8'b01101111 : // '9'
+      (cnt == 10) ? 8'b01110111 : // 'a'
+      (cnt == 11) ? 8'b01111100 : // 'b'
+      (cnt == 12) ? 8'b00111001 : // 'c'
+      (cnt == 13) ? 8'b01011110 : // 'd'
+      (cnt == 14) ? 8'b01111001 : // 'e'
+                    8'b01110001 ; // 'f'
    
 
    // Connect Tiny Tapeout outputs.
    // Note that my_design will be under /fpga_pins/fpga.
    // Example *uo_out = /fpga_pins/fpga|my_pipe>>3$uo_out;
-   assign *uo_out = 8'b0;
+   //assign *uo_out = 8'b0;
    assign *uio_out = 8'b0;
    assign *uio_oe = 8'b0;
    
